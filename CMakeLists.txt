@@ -5,6 +5,10 @@ project( zlib VERSION 1.2.11 LANGUAGES C )
 set( CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE )
 set( DEBUG_SUFFIX "" )
 set( TYPE_SUFFIX "" )
+set( ZLIB_INSTALL_LIBS ON CACHE BOOL "" )
+set( ZLIB_INSTALL_BINS ON CACHE BOOL "" )
+set( ZLIB_LIB_DESTINATION "lib" CACHE PATH "" )
+set( ZLIB_BIN_DESTINATION "bin" CACHE PATH "" )
 
 option(ASM686 "Enable building i686 assembly implementation")
 option(AMD64 "Enable building amd64 assembly implementation")
@@ -155,7 +159,7 @@ if(MINGW)
 	endif()
 
 	add_custom_command( OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/zlib1rc.obj
-		COMMAND ${CMAKE_RC_COMPILER}
+		COMMAND "'${CMAKE_RC_COMPILER}'"
 			-D GCC_WINDRES
 			-I ${CMAKE_CURRENT_SOURCE_DIR}
 			-I ${CMAKE_CURRENT_BINARY_DIR}
@@ -206,10 +210,17 @@ if(UNIX)
 	endif()
 endif()
 
-install( TARGETS zlib
-	ARCHIVE DESTINATION "lib"
-	RUNTIME DESTINATION "bin"
-)
+if( ZLIB_INSTALL_LIBS )
+	install( TARGETS zlib
+		ARCHIVE DESTINATION "${ZLIB_LIB_DESTINATION}"
+	)
+endif()
+
+if( ZLIB_INSTALL_BINS )
+	install( TARGETS zlib
+		RUNTIME DESTINATION "${ZLIB_BIN_DESTINATION}"
+	)
+endif()
 
 if( ZLIB_INSTALL_HEADERS )
 	install( FILES 
